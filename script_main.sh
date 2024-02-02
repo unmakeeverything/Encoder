@@ -52,7 +52,7 @@ find "$top_level_directory" -type f \( -name '*.mp4' -o -name '*.mkv' -o -name '
 
     if (( $(echo "$bitrate > 3800" | bc -l) )); then
         # Convert video over 3800 kbps to HEVC with 2000 kbps bitrate
-        ffmpeg -hwaccel auto -i "$file" -nostdin -b:v 2M -minrate 1M -maxrate 4M -c:v libx265 -pix_fmt yuv420p10le -x265-params rc-lookahead=120 -profile:v main10 -c:a aac -b:a 128k -ac 2 -af loudnorm -y -f "$ffmpeg_format" "${file}.tmp"
+        ffmpeg -hwaccel auto -i "$file" -nostdin -b:v 2M -minrate 1M -maxrate 10M -c:v libx265 -pix_fmt yuv420p10le -x265-params rc-lookahead=120 -profile:v main10 -c:a aac -b:a 128k -ac 2 -af loudnorm -y -f "$ffmpeg_format" "${file}.tmp"
 
         new_duration=$(get_duration "${file}.tmp")
         duration_diff=$(echo "($new_duration - $original_duration) / $original_duration" | bc -l)
