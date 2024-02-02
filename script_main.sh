@@ -36,7 +36,15 @@ get_ffmpeg_format() {
 top_level_directory="${1:-.}"
 
 # Main loop to process files
-find "$top_level_directory" -type f -name '*.mp4' -o -name '*.mkv' -o -name '*.avi' | while read file; do
+find "$top_level_directory" -type f \( -name '*.mp4' -o -name '*.mkv' -o -name '*.avi' \) | while read file; do
+    # Check file size, skip files under 200 MB
+    file_size_mb=$(stat -c %s "$file")
+    file_size_mb=$((file_size_mb / 1024 / 1024))
+    if [ "$file_size_mb" -lt 200 ]; then
+        echo "Skipping $file due to its size ($file_size_mb MB) being under 200 MB."
+        continue # Skip to the next file
+    fi
+
     bitrate=$(calculate_bitrate "$file")
     audio_channels=$(get_audio_channels "$file")
     original_duration=$(get_duration "$file")
